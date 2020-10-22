@@ -1,6 +1,7 @@
 import numpy as np
 import random
 import math
+import matplotlib.pyplot as plt
 
 class ScheduleGenerator():
 
@@ -33,14 +34,14 @@ class ScheduleGenerator():
         # 1. Putting high priority tasks first - DONE
         # 2. Putting breaks after long periods of doing stuff - DONE
         # 3. Consistency in tasks - DONE
-        # 4. Doing high priority tasks for longer periods of time, but not too long
+        # 4. Doing high priority tasks for longer periods of time, but not too long - DONE
 
         priority_score    = self.calculate_priority_score(schedule)
         break_score       = self.calculate_break_score(schedule)
         consistency_score = round(self.calculate_consistency_score(schedule), 3)
         time_period_score = self.calculate_time_period_score(schedule)
 
-        fin_score = 0.8*priority_score + 0.5*break_score + 0.6*consistency_score + 0.9*time_period_score
+        fin_score = 0.8*priority_score + 1*break_score + 0.5*consistency_score + 0.8*time_period_score
 
         # FOR TESTING PURPOSES
         # if(fin_score > 20):
@@ -175,15 +176,17 @@ if __name__ == '__main__':
                   'volunteer': 3,
                   'break': 1}
 
-    time_slots = 10
+    time_slots = 20
     env = ScheduleGenerator(event_list, time_slots)
 
-    num_generations = 50
-    num_population  = 100
+    num_generations = 100
+    num_population  = 300
 
     avg_score = 0
 
     original_population = env.randomly_generate_schedules(num_population)
+
+    generation_averages = []
     
     for gen in range(num_generations):
 
@@ -199,8 +202,9 @@ if __name__ == '__main__':
 
             original_population_with_scores.append((schedule, score))
 
-        avg_score /= num_population
+        avg_score /= len(original_population)
         avg_score = round(avg_score, 3)
+        generation_averages.append(avg_score)
 
         print(original_population[0])
         print(f'Average Score => {avg_score}')
@@ -208,3 +212,6 @@ if __name__ == '__main__':
         good_schedules = discard_bad_schedules(original_population_with_scores, avg_score)
 
         original_population = crossover(original_population_with_scores, time_slots)
+
+    plt.plot(generation_averages)
+    plt.show()
