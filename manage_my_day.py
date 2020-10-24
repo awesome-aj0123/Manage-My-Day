@@ -57,7 +57,7 @@ class ScheduleGenerator():
         #     print('-----------------')
 
 
-        return max(0, round(fin_score, 3))
+        return max(0.01, round(fin_score, 3))
 
     def calculate_priority_score(self, schedule):
 
@@ -139,15 +139,18 @@ class ScheduleGenerator():
 
         score = 0
         for i in dict_events:
-            #a = math.floor((self.event_list[i]/total_priorities) * 2 * self.time_slots) / 2
-            time_event = ()
-            for j in self.event_tuples:
-                if j[0] == i:
-                    time_event = j
-                    break
 
-            event_score = -2*(dict_events[i] - time_event[5])**2 + 4
-            score += event_score
+            if i != 'break':
+
+                #a = math.floor((self.event_list[i]/total_priorities) * 2 * self.time_slots) / 2
+                time_event = ()
+                for j in self.event_tuples:
+                    if j[0] == i:
+                        time_event = j
+                        break
+
+                event_score = -2*(dict_events[i] - time_event[5])**2 + 4
+                score += event_score
 
         return score
 
@@ -410,12 +413,8 @@ class DayManager():
         return "{0:0=2d}".format(hour) + ':' + "{0:0=2d}".format(minute)
 
 
-def get_schedule(event_tuples = [('math class', '10:00', '11:00', 4, True, 0),
-                                 ('english class', '15:00', '16:25', 4, True, 0),
-                                 ('physics class', '12:00', '13:00', 4, True, 0),
-                                 ('play valorant', '', '', 1, False, 0.5),
-                                 ('go run', '', '', 3, False, 1),
-                                 ('study for midterm', '', '', 3, False, 6)],
+def get_schedule(event_tuples = [('english class', '15:00', '16:25', 4, True, 0.5), 
+                                 ('play valorant', '', '', 1, False, 1)],
                 start_time    = '08:00',
                 end_time      = '21:00'):
 
