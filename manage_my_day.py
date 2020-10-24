@@ -5,12 +5,14 @@ import matplotlib.pyplot as plt
 
 class ScheduleGenerator():
 
-    def __init__(self, 
+    def __init__(self,
+                 event_tuples,
                  event_list,
                  time_slots):
 
-        self.event_list = event_list
-        self.time_slots = time_slots        
+        self.event_tuples = event_tuples
+        self.event_list   = event_list
+        self.time_slots   = time_slots        
 
     def randomly_generate_schedules(self, population):
 
@@ -40,8 +42,9 @@ class ScheduleGenerator():
         break_score       = self.calculate_break_score(schedule)
         consistency_score = round(self.calculate_consistency_score(schedule), 3)
         time_period_score = self.calculate_time_period_score(schedule)
+        variance_score    = self.calculate_variance_score(schedule)
 
-        fin_score = 0.8*priority_score + 0.5*break_score + 0.8*consistency_score + 0.8*time_period_score
+        fin_score = 0.8*priority_score + 0.5*break_score + 0.8*consistency_score + 0.8*time_period_score + 1*variance_score
 
         # FOR TESTING PURPOSES
         # if(fin_score > 20):
@@ -136,11 +139,27 @@ class ScheduleGenerator():
 
         score = 0
         for i in dict_events:
-            a = math.floor((self.event_list[i]/total_priorities) * 2 * self.time_slots) / 2
-            event_score = -2*(dict_events[i] - a)**2 + 4
+            #a = math.floor((self.event_list[i]/total_priorities) * 2 * self.time_slots) / 2
+            time_event = ()
+            for j in self.event_tuples:
+                if j[0] == i:
+                    time_event = j
+                    break
+
+            event_score = -2*(dict_events[i] - time_event[5])**2 + 4
             score += event_score
 
         return score
+
+    def calculate_variance_score(self, schedule):
+
+        event_names = set()
+
+        for event in schedule:
+            if event not in event_names:
+                event_names.add(event)
+
+        return len(event_names)
 
 def discard_bad_schedules(original_population, average):
     return [x for x in original_population if(x[1] > average)]
@@ -173,7 +192,7 @@ class DayManager():
 
     def genetic_algo(self, event_tuples, start_time, end_time):
 
-        event_list = self.gather_dynamic_events(event_tuples)
+        dynamic_events_list = self.gather_dynamic_events(event_tuples)
 
         # # putting the events and priorities into a dictionary
         # # the event ('break', 1) will automatically be added to the dictionary
@@ -186,7 +205,7 @@ class DayManager():
         total_time_slots = self.calculate_slots(event_tuples, start_time, end_time)
         time_slots       = self.substract_fixed(event_tuples, total_time_slots)
 
-        env = ScheduleGenerator(event_list, time_slots)
+        env = ScheduleGenerator(event_tuples, dynamic_events_list, time_slots)
 
         num_generations = 100
         num_population  = 300
@@ -360,7 +379,7 @@ class DayManager():
 
         for event_des in event_tuples:
             
-            if not event_des[len(event_des) - 1]:
+            if not event_des[len(event_des) - 2]:
                 dynamic_events[event_des[0]] = event_des[3]
 
         dynamic_events['break'] = 1
@@ -391,17 +410,18 @@ class DayManager():
         return "{0:0=2d}".format(hour) + ':' + "{0:0=2d}".format(minute)
 
 
-def get_schedule(event_tuples = [('math class', '09:00', '10:35', 4, True),
-                                 ('english class', '14:00', '15:30', 4, True),
-                                 ('study english', '', '', 3, False),
-                                 ('study com sci', '', '', 3, False),
-                                 ('running', '', '', 1, False),
-                                 ('tennis', '', '', 2, False),
-                                 ('volunteer', '', '', 2, False)],
-                start_time    = '07:47',
-                end_time      = '20:40'):
+def get_schedule(event_tuples = [('math class', '10:00', '11:00', 4, True, 0),
+                                 ('english class', '15:00', '16:25', 4, True, 0),
+                                 ('physics class', '12:00', '13:00', 4, True, 0),
+                                 ('play valorant', '', '', 1, False, 0.5),
+                                 ('go run', '', '', 3, False, 1),
+                                 ('study for midterm', '', '', 3, False, 6)],
+                start_time    = '08:00',
+                end_time      = '21:00'):
 
     manager = DayManager()
+
+    event_tuples.append(('break', '', ':', 1, False, 1))
 
     final_schedule = manager.genetic_algo(event_tuples, start_time, end_time)
 
@@ -414,4 +434,6 @@ def get_schedule(event_tuples = [('math class', '09:00', '10:35', 4, True),
 if __name__ == '__main__':
 
     final_schedule = get_schedule()
-    print(final_schedule)
+    
+    for i in final_schedule:
+        print(i)
