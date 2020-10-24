@@ -84,7 +84,7 @@ class ScheduleGenerator():
         # where x = difference between the previous break and the current one
 
         previous_break_index = 0
-
+        i=0
         for i in range(len(schedule)):
 
             current_event = schedule[i]
@@ -285,23 +285,25 @@ class DayManager():
 
         final = []
 
-        curr_event = final_schedule_with_times[0][0]
-        start_time = final_schedule_with_times[0][1]
-        curr_time  = final_schedule_with_times[0][1]
+        if(len(final_schedule_with_times) > 0):
 
-        for i in range(1, len(final_schedule_with_times)):
+            curr_event = final_schedule_with_times[0][0]
+            start_time = final_schedule_with_times[0][1]
+            curr_time  = final_schedule_with_times[0][1]
 
-            event = final_schedule_with_times[i]
+            for i in range(1, len(final_schedule_with_times)):
 
-            if event[0] != curr_event or self.get_slot_number(curr_time)+1!=self.get_slot_number(event[1]):
+                event = final_schedule_with_times[i]
 
-                final.append((curr_event, self.get_time_from_slot(self.get_slot_number(start_time)+1), self.get_time_from_slot(self.get_slot_number(curr_time)+2)))
-                start_time = event[1]
+                if event[0] != curr_event or self.get_slot_number(curr_time)+1!=self.get_slot_number(event[1]):
 
-            curr_time  = event[1]
-            curr_event = event[0]
+                    final.append((curr_event, self.get_time_from_slot(self.get_slot_number(start_time)+1), self.get_time_from_slot(self.get_slot_number(curr_time)+2)))
+                    start_time = event[1]
 
-        final.append((curr_event, self.get_time_from_slot(self.get_slot_number(start_time)+1), self.get_time_from_slot(self.get_slot_number(curr_time)+2)))
+                curr_time  = event[1]
+                curr_event = event[0]
+
+            final.append((curr_event, self.get_time_from_slot(self.get_slot_number(start_time)+1), self.get_time_from_slot(self.get_slot_number(curr_time)+2)))
 
         return final
 
@@ -413,12 +415,11 @@ class DayManager():
         return "{0:0=2d}".format(hour) + ':' + "{0:0=2d}".format(minute)
 
 
-def get_schedule(event_tuples = [('math class', '10:00', '11:00', 4, True, 0.5), 
-                                 ('english class', '15:00', '16:25', 4, True, 0.5), 
-                                 ('play minecraft', '', '', 1, False, 1.5),
-                                 ('run', '', '', 2, False, 1.5),
-                                 ('study for midterm', '', '', 3, False, 2.5)
-                                 ],
+def get_schedule(event_tuples = [('english class', '14:49', '15:19', 4, True, 0.5), 
+                                 ('physics class', '16:00', '17:20', 4, True, 0.5), 
+                                 ('play valorant', '', '', 1, False, 1), 
+                                 ('go biking', '', '', 2, False, 1.5), 
+                                 ('study for midterm', '', '', 3, False, 2.5)], 
                 start_time    = '08:00',
                 end_time      = '23:00'):
 
