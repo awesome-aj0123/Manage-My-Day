@@ -149,7 +149,7 @@ class ScheduleGenerator():
                         time_event = j
                         break
 
-                event_score = -2*(dict_events[i] - time_event[5])**2 + 4
+                event_score = -5*(dict_events[i] - time_event[5])**2 + 4
                 score += event_score
 
         return score
@@ -413,10 +413,14 @@ class DayManager():
         return "{0:0=2d}".format(hour) + ':' + "{0:0=2d}".format(minute)
 
 
-def get_schedule(event_tuples = [('english class', '15:00', '16:25', 4, True, 0.5), 
-                                 ('play valorant', '', '', 1, False, 1)],
+def get_schedule(event_tuples = [('math class', '10:00', '11:00', 4, True, 0.5), 
+                                 ('english class', '15:00', '16:25', 4, True, 0.5), 
+                                 ('play minecraft', '', '', 1, False, 1.5),
+                                 ('run', '', '', 2, False, 1.5),
+                                 ('study for midterm', '', '', 3, False, 2.5)
+                                 ],
                 start_time    = '08:00',
-                end_time      = '21:00'):
+                end_time      = '23:00'):
 
     manager = DayManager()
 
@@ -424,11 +428,17 @@ def get_schedule(event_tuples = [('english class', '15:00', '16:25', 4, True, 0.
 
     final_schedule = manager.genetic_algo(event_tuples, start_time, end_time)
 
+    final_final = []
+
     for event in event_tuples:
         if event[4] == True:
             final_schedule.append((event[0], event[1], event[2]))
 
-    return final_schedule
+    for event in final_schedule:
+        if event[0] != 'break':
+            final_final.append(event)
+
+    return final_final
 
 if __name__ == '__main__':
 
