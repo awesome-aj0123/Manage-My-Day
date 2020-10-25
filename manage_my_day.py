@@ -44,7 +44,7 @@ class ScheduleGenerator():
         time_period_score = self.calculate_time_period_score(schedule)
         variance_score    = self.calculate_variance_score(schedule)
 
-        fin_score = 0.8*priority_score + 0.5*break_score + 0.8*consistency_score + 0.8*time_period_score + 1*variance_score
+        fin_score = 1.1*priority_score + 0.5*break_score + 1.3*consistency_score + 0.8*time_period_score + 0.7*variance_score
 
         # FOR TESTING PURPOSES
         # if(fin_score > 20):
@@ -205,12 +205,12 @@ class DayManager():
         #               'volunteer': 2,
         #               'break': 1}
 
-        total_time_slots = self.calculate_slots(event_tuples, start_time, end_time)
+        total_time_slots = self.calculate_slots(event_tuples, start_time, end_time) #CORRECT
         time_slots       = self.substract_fixed(event_tuples, total_time_slots)
 
         env = ScheduleGenerator(event_tuples, dynamic_events_list, time_slots)
 
-        num_generations = 100
+        num_generations = 50
         num_population  = 300
 
         avg_score = 0
@@ -267,7 +267,7 @@ class DayManager():
                 for i in range(starting_slot, ending_slot + 1):
                     final_schedule[i] = event[0]
 
-        start_slot_dynamic_events = self.get_slot_number(start_time)
+        start_slot_dynamic_events = self.get_slot_number(start_time)+1
         
         i = 0
         index = start_slot_dynamic_events
@@ -303,7 +303,8 @@ class DayManager():
                 curr_time  = event[1]
                 curr_event = event[0]
 
-            final.append((curr_event, self.get_time_from_slot(self.get_slot_number(start_time)+1), self.get_time_from_slot(self.get_slot_number(curr_time)+2)))
+            if(self.get_slot_number(final[len(final)-1][2]) < self.get_slot_number(end_time)):
+                final.append((curr_event, self.get_time_from_slot(self.get_slot_number(start_time)), self.get_time_from_slot(self.get_slot_number(curr_time))))
 
         return final
 
@@ -411,21 +412,23 @@ class DayManager():
         if slot_number % 2 == 0:
             minute = 0
 
-        #print("{0:0=2d}".format(hour) + ':' + "{0:0=2d}".format(minute))
         return "{0:0=2d}".format(hour) + ':' + "{0:0=2d}".format(minute)
 
 
 def get_schedule(event_tuples = [('english class', '14:49', '15:19', 4, True, 0.5), 
                                  ('physics class', '16:00', '17:20', 4, True, 0.5), 
                                  ('play valorant', '', '', 1, False, 1), 
-                                 ('go biking', '', '', 2, False, 1.5), 
-                                 ('study for midterm', '', '', 3, False, 2.5)], 
+                                 ('go walking', '', '', 2, False, 1.5), 
+                                 ('study for midterm', '', '', 3, False, 3.5),
+                                 ('study probability', '', '', 3, False, 2.5)], 
                 start_time    = '08:00',
-                end_time      = '23:00'):
+                end_time      = '21:00'):
 
     manager = DayManager()
 
-    event_tuples.append(('break', '', ':', 1, False, 1))
+    event_tuples.append(('break', '', '', 1, False, 1))
+    event_tuples.append(('lunch', '12:00', '12:30', 4, True, 1))
+    event_tuples.append(('dinner', '19:00', '19:45', 4, True, 1))
 
     final_schedule = manager.genetic_algo(event_tuples, start_time, end_time)
 
