@@ -271,7 +271,7 @@ class DayManager():
         
         i = 0
         index = start_slot_dynamic_events
-        while i < len(best_schedule):
+        while index < len(final_schedule) and i < len(best_schedule):
             event = best_schedule[i]
 
             if final_schedule[index] == '':
@@ -423,7 +423,7 @@ def get_schedule(event_tuples = [('Math Class', '10:00', '11:00', 4, True, 0.5),
                                 ('Study for Midterm', '', '', 3, False, 2.5),
                                 ('Take Notes for Lecture', '', '', 2, False, 1.5)], 
                 start_time    = '08:00',
-                end_time      = '21:00'):
+                end_time      = '24:00'):
 
     manager = DayManager()
 
