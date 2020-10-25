@@ -415,12 +415,13 @@ class DayManager():
         return "{0:0=2d}".format(hour) + ':' + "{0:0=2d}".format(minute)
 
 
-def get_schedule(event_tuples = [('english class', '14:49', '15:19', 4, True, 0.5), 
-                                 ('physics class', '16:00', '17:20', 4, True, 0.5), 
-                                 ('play valorant', '', '', 1, False, 1), 
-                                 ('go walking', '', '', 2, False, 1.5), 
-                                 ('study for midterm', '', '', 3, False, 3.5),
-                                 ('study probability', '', '', 3, False, 2.5)], 
+def get_schedule(event_tuples = [('Math Class', '10:00', '11:00', 4, True, 0.5), 
+                                ('English Class', '15:00', '16:25', 4, True, 0.5), 
+                                ('Physics Class', '13:00', '14:00', 4, True, 0.5), 
+                                ('Play Valorant', '', '', 1, False, 1), 
+                                ('Go Running', '', '', 2, False, 1.5), 
+                                ('Study for Midterm', '', '', 3, False, 2.5),
+                                ('Take Notes for Lecture', '', '', 2, False, 1.5)], 
                 start_time    = '08:00',
                 end_time      = '21:00'):
 
