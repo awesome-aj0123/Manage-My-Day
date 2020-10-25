@@ -1,0 +1,40 @@
+.item-wrapper {
+    position: relative;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+.priority-strip-1 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 10px;
+    width: 100%;
+    background-color: #06d6a0;
+}
+.priority-strip-2 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 10px;
+    width: 100%;
+    background-color: #ffd166;
+}
+.priority-strip-3 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 10px;
+    width: 100%;
+    background-color: #ef476f;
+}
+
+.priority-strip-4 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 10px;
+    width: 100%;
+    background-color: #662d91;
+}
+.font-med {
+    font-weight: 500 !important;
+}
