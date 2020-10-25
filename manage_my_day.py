@@ -44,10 +44,10 @@ class ScheduleGenerator():
         time_period_score = self.calculate_time_period_score(schedule)
         variance_score    = self.calculate_variance_score(schedule)
 
-        fin_score = 1.1*priority_score + 0.5*break_score + 1.3*consistency_score + 0.8*time_period_score + 0.7*variance_score
+        fin_score = 1.5*priority_score+ 1*consistency_score + 1.5*time_period_score + 1*variance_score
 
         # FOR TESTING PURPOSES
-        # if(fin_score > 20):
+        # if(fin_score > 20):https://github.com/awesome-aj0123/Manage-My-Day
         #     print('-----------------')
         #     print(schedule)
         #     print(f'Priority Score => {priority_score}')
@@ -423,7 +423,7 @@ def get_schedule(event_tuples = [('Math Class', '10:00', '11:00', 4, True, 0.5),
                                 ('Study for Midterm', '', '', 3, False, 2.5),
                                 ('Take Notes for Lecture', '', '', 2, False, 1.5)], 
                 start_time    = '08:00',
-                end_time      = '24:00'):
+                end_time      = '22:00'):
 
     manager = DayManager()
 
