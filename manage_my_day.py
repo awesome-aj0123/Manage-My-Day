@@ -44,10 +44,10 @@ class ScheduleGenerator():
         time_period_score = self.calculate_time_period_score(schedule)
         variance_score    = self.calculate_variance_score(schedule)
 
-        fin_score = 0.8*priority_score + 0.5*break_score + 0.8*consistency_score + 0.8*time_period_score + 1*variance_score
+        fin_score = 1.5*priority_score+ 1*consistency_score + 1.5*time_period_score + 1*variance_score
 
         # FOR TESTING PURPOSES
-        # if(fin_score > 20):
+        # if(fin_score > 20):https://github.com/awesome-aj0123/Manage-My-Day
         #     print('-----------------')
         #     print(schedule)
         #     print(f'Priority Score => {priority_score}')
@@ -57,7 +57,7 @@ class ScheduleGenerator():
         #     print('-----------------')
 
 
-        return max(0, round(fin_score, 3))
+        return max(0.01, round(fin_score, 3))
 
     def calculate_priority_score(self, schedule):
 
@@ -84,7 +84,7 @@ class ScheduleGenerator():
         # where x = difference between the previous break and the current one
 
         previous_break_index = 0
-
+        i=0
         for i in range(len(schedule)):
 
             current_event = schedule[i]
@@ -139,15 +139,18 @@ class ScheduleGenerator():
 
         score = 0
         for i in dict_events:
-            #a = math.floor((self.event_list[i]/total_priorities) * 2 * self.time_slots) / 2
-            time_event = ()
-            for j in self.event_tuples:
-                if j[0] == i:
-                    time_event = j
-                    break
 
-            event_score = -2*(dict_events[i] - time_event[5])**2 + 4
-            score += event_score
+            if i != 'break':
+
+                #a = math.floor((self.event_list[i]/total_priorities) * 2 * self.time_slots) / 2
+                time_event = ()
+                for j in self.event_tuples:
+                    if j[0] == i:
+                        time_event = j
+                        break
+
+                event_score = -5*(dict_events[i] - time_event[5])**2 + 4
+                score += event_score
 
         return score
 
@@ -202,12 +205,12 @@ class DayManager():
         #               'volunteer': 2,
         #               'break': 1}
 
-        total_time_slots = self.calculate_slots(event_tuples, start_time, end_time)
+        total_time_slots = self.calculate_slots(event_tuples, start_time, end_time) #CORRECT
         time_slots       = self.substract_fixed(event_tuples, total_time_slots)
 
         env = ScheduleGenerator(event_tuples, dynamic_events_list, time_slots)
 
-        num_generations = 100
+        num_generations = 50
         num_population  = 300
 
         avg_score = 0
@@ -264,11 +267,11 @@ class DayManager():
                 for i in range(starting_slot, ending_slot + 1):
                     final_schedule[i] = event[0]
 
-        start_slot_dynamic_events = self.get_slot_number(start_time)
+        start_slot_dynamic_events = self.get_slot_number(start_time)+1
         
         i = 0
         index = start_slot_dynamic_events
-        while i < len(best_schedule):
+        while index < len(final_schedule) and i < len(best_schedule):
             event = best_schedule[i]
 
             if final_schedule[index] == '':
@@ -282,23 +285,26 @@ class DayManager():
 
         final = []
 
-        curr_event = final_schedule_with_times[0][0]
-        start_time = final_schedule_with_times[0][1]
-        curr_time  = final_schedule_with_times[0][1]
+        if(len(final_schedule_with_times) > 0):
 
-        for i in range(1, len(final_schedule_with_times)):
+            curr_event = final_schedule_with_times[0][0]
+            start_time = final_schedule_with_times[0][1]
+            curr_time  = final_schedule_with_times[0][1]
 
-            event = final_schedule_with_times[i]
+            for i in range(1, len(final_schedule_with_times)):
 
-            if event[0] != curr_event or self.get_slot_number(curr_time)+1!=self.get_slot_number(event[1]):
+                event = final_schedule_with_times[i]
 
-                final.append((curr_event, self.get_time_from_slot(self.get_slot_number(start_time)+1), self.get_time_from_slot(self.get_slot_number(curr_time)+2)))
-                start_time = event[1]
+                if event[0] != curr_event or self.get_slot_number(curr_time)+1!=self.get_slot_number(event[1]):
 
-            curr_time  = event[1]
-            curr_event = event[0]
+                    final.append((curr_event, self.get_time_from_slot(self.get_slot_number(start_time)+1), self.get_time_from_slot(self.get_slot_number(curr_time)+2)))
+                    start_time = event[1]
 
-        final.append((curr_event, self.get_time_from_slot(self.get_slot_number(start_time)+1), self.get_time_from_slot(self.get_slot_number(curr_time)+2)))
+                curr_time  = event[1]
+                curr_event = event[0]
+
+            if(self.get_slot_number(final[len(final)-1][2]) < self.get_slot_number(end_time)):
+                final.append((curr_event, self.get_time_from_slot(self.get_slot_number(start_time)), self.get_time_from_slot(self.get_slot_number(curr_time))))
 
         return final
 
@@ -406,30 +412,38 @@ class DayManager():
         if slot_number % 2 == 0:
             minute = 0
 
-        #print("{0:0=2d}".format(hour) + ':' + "{0:0=2d}".format(minute))
         return "{0:0=2d}".format(hour) + ':' + "{0:0=2d}".format(minute)
 
 
-def get_schedule(event_tuples = [('math class', '10:00', '11:00', 4, True, 0),
-                                 ('english class', '15:00', '16:25', 4, True, 0),
-                                 ('physics class', '12:00', '13:00', 4, True, 0),
-                                 ('play valorant', '', '', 1, False, 0.5),
-                                 ('go run', '', '', 3, False, 1),
-                                 ('study for midterm', '', '', 3, False, 6)],
+def get_schedule(event_tuples = [('Math Class', '10:00', '11:00', 4, True, 0.5), 
+                                ('English Class', '15:00', '16:25', 4, True, 0.5), 
+                                ('Physics Class', '13:00', '14:00', 4, True, 0.5), 
+                                ('Play Valorant', '', '', 1, False, 1), 
+                                ('Go Running', '', '', 2, False, 1.5), 
+                                ('Study for Midterm', '', '', 3, False, 2.5),
+                                ('Take Notes for Lecture', '', '', 2, False, 1.5)], 
                 start_time    = '08:00',
-                end_time      = '21:00'):
+                end_time      = '22:00'):
 
     manager = DayManager()
 
-    event_tuples.append(('break', '', ':', 1, False, 1))
+    event_tuples.append(('break', '', '', 1, False, 1))
+    event_tuples.append(('lunch', '12:00', '12:30', 4, True, 1))
+    event_tuples.append(('dinner', '19:00', '19:45', 4, True, 1))
 
     final_schedule = manager.genetic_algo(event_tuples, start_time, end_time)
+
+    final_final = []
 
     for event in event_tuples:
         if event[4] == True:
             final_schedule.append((event[0], event[1], event[2]))
 
-    return final_schedule
+    for event in final_schedule:
+        if event[0] != 'break':
+            final_final.append(event)
+
+    return final_final
 
 if __name__ == '__main__':
 
